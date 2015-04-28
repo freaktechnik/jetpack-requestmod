@@ -1,0 +1,13 @@
+{
+  "title": "RequestMod",
+  "name": "requestmod",
+  "version": "0.0.1",
+  "description": "Modify ongoing requests using the Firefox Add-on SDK",
+  "main": "lib/requestmod.js",
+  "author": "Martin Giger",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "license": "MPL-2.0"
+}
