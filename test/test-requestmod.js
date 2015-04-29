@@ -72,13 +72,15 @@ exports['test incoming'] = function(assert, done) {
             assert.equal(req.referrer, null, "Referrer is matching");
             assert.equal(req.status, 200, "Status code is correct");
             //assert.equal(req.content, CONTENT); content is empty :(
+            req.processContent(function(content) {
+                assert.equal(content, CONTENT);
+                return "foo";
+            });
 
             assert.throws(() => { req.method = 'POST'; }, "The request method can only be set for outgoing requests");
             assert.throws(() => { req.referrer = 'http://humanoids.be'; }, "Cannot set the referrer of an incoming request");
             assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot redirect an incoming request");
             req.headers = { "X-Something": "asdf" };
-            req.content = "foo";
-            assert.equal(req.content, "foo");
         }
     });
     r.get();

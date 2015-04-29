@@ -64,6 +64,12 @@ Readonly value for the direction of the request, so it's either `RequestMod.INCO
 ##### abort()
 Abort the request.
 
+##### processContent(callback)
+Allows to process the full content into new content, however the callback is possibly executed asynchronously and the OngoingRequest boject might have been destroyed by then.
+###### Arguments
+callback: `function` executed as soon as the content is known. Should return the new content.
+Default value: `null`
+
 ##### destroy()
 Destroy the OngoingRequest object. You should never have to call that, as it is
 desroyed after the requestHandler is executed.
