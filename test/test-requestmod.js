@@ -1,5 +1,5 @@
 /*
- * RequestMod by Martin Giger
+ * Unit Tests for RequestMod by Martin Giger
  *
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -90,6 +90,8 @@ exports['test outgoing'] = function(assert, done) {
             assert.equal(req.referrer, null, "Referrer is matching");
             assert.throws(() => req.status, "Status is unavailable for outgoing requests");
             assert.equal(req.content, "test", "Content is read correctly");
+            assert.equal(req.charset, "UTF-8");
+            assert.equal(req.type, "text/plain");
 
             req.content = "tset";
             req.referrer = "http://humanoids.be/";
@@ -108,6 +110,7 @@ exports['test incoming'] = function(assert, done) {
         onComplete: (result) => {
             assert.equal(result.headers["X-Something"], "asdf");
             assert.equal(result.text, "foo");
+            //assert.equal(result.headers["Content-Type"], "text/plain");
             mod.destroy();
             done();
         }
@@ -121,6 +124,8 @@ exports['test incoming'] = function(assert, done) {
             assert.equal(req.direction, RequestMod.INCOMING, "Direction is correct");
             assert.equal(req.referrer, null, "Referrer is matching");
             assert.equal(req.status, 200, "Status code is correct");
+            assert.equal(req.charset, "");
+            assert.equal(req.type, "text/html");
             //assert.equal(req.content, CONTENT); content is empty :(
             req.processContent(function(content) {
                 assert.equal(content, CONTENT);
@@ -131,6 +136,8 @@ exports['test incoming'] = function(assert, done) {
             assert.throws(() => { req.referrer = 'http://humanoids.be'; }, "Cannot set the referrer of an incoming request");
             assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot redirect an incoming request");
             req.headers = { "X-Something": "asdf" };
+            //req.type = "text/plain";
+            req.charset = "UTF-8";
         }
     });
     r.get();
