@@ -19,5 +19,6 @@
   },
   "bugs": {
     "url": "https://github.com/freaktechnik/jetpack-requestmod/issues"
-  }
+  },
+  "keywords": ["add-on sdk", "jetpack", "firefox", "request", "modify"]
 }
