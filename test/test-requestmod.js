@@ -57,6 +57,7 @@ exports['test incoming'] = function(assert, done) {
         url: ROOT,
         onComplete: (result) => {
             assert.equal(result.headers["X-Something"], "asdf");
+            assert.equal(result.text, "foo");
             mod.destroy();
             done();
         }
@@ -70,11 +71,13 @@ exports['test incoming'] = function(assert, done) {
             assert.equal(req.direction, RequestMod.INCOMING, "Direction is correct");
             assert.equal(req.referrer, null, "Referrer is matching");
             assert.equal(req.status, 200, "Status code is correct");
-            //assert.equal(req.content, CONTENT);
+            //assert.equal(req.content, CONTENT); content is empty :(
 
             assert.throws(() => { req.method = 'POST'; }, "The request method can only be set for outgoing requests");
             assert.throws(() => { req.referrer = 'http://humanoids.be'; }, "Cannot set the referrer of an incoming request");
+            assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot redirect an incoming request");
             req.headers = { "X-Something": "asdf" };
+            req.content = "foo";
         }
     });
     r.get();

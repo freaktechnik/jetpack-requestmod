@@ -20,7 +20,8 @@ The module exports three things: two direction constants and the `RequestMod` co
 Constant signifying an outgoing request, as in a request going to a server.
 
 #### RequestMod.INCOMING
-Constant for incoming requests, as in coming from a server.
+Constant for incoming requests, as in coming from a server. You generally want to avoid this direction, except for modifying incoming headers.
+It's generally advised to try an alternative method from https://developer.mozilla.org/en-US/Add-ons/Overlay_Extensions/XUL_School/Intercepting_Page_Loads instead. This implementation covers the "HTTP Observers" part.
 
 ### RequestMod(options)
 Constructs a new `RequestMod` instance.
@@ -39,7 +40,7 @@ A callback function that gets passed an OngoingRequest object. Must execute acti
 ### OngoingRequest
 #### Properties
 ##### url
-The URL of the request as a string. Can only be written for outgoing requests.
+The URL of the request as a string. Can only be written for outgoing requests. Setting this property factually redirects the request to a different URL.
 
 ##### referrer
 The referrer of the request as a string. Can only be written for outgoing requests.
@@ -54,7 +55,7 @@ Readonly statuscode of an incoming request.
 Headers object. Headers are only changed if the headers property itself is overwritten.
 
 ##### content
-Read and set the content. Currently unreliable. Should work for outgoing requests, but is untested.
+Read and set the content. The reading part is not reliable for incoming requests, due to the content's streaming nature.
 
 ##### direction
 Readonly value for the direction of the request, so it's either `RequestMod.INCOMING` or `RequestMod.OUTGOING`.
