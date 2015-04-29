@@ -41,11 +41,31 @@ srv.registerPathHandler("/echo/", function(request, response) {
 const PORT = srv.identity.primaryPort;
 const ROOT = 'http://localhost:'+PORT+'/';
 
-function compareHeaders(headers, expected) {
-    return Object.keys(headers).every(function(h) {
-        return headers[h] == expected[h];
-    });
-}
+exports['test contract'] = function(assert) {
+    assert.throws(() => {
+        RequestMod({
+            url: 9,
+            direction: [ RequestMod.OUTGOING ],
+            requestHandler: () => {}
+        });
+    }, "The `url` option must always contain atleast one rule as a string, regular expression, or an array of strings and regular expressions.");
+
+    assert.throws(() => {
+        RequestMod({
+            url: 'http://example.com',
+            direction: RequestMod.INCOMING,
+            requestHandler: () => {}
+        });
+    }, 'The `direction` option must always be an array with at least one item and each item must have the value of a direction constant.');
+
+    assert.throws(() => {
+        RequestMod({
+            url: 'http://example.com/',
+            direction: [ RequestMod.OUTGOING, RequestMod.INCOMING ],
+            requestHandler: null
+        });
+    }, 'The `requestHandler` option must alwys be a function.');
+};
 
 exports['test outgoing'] = function(assert, done) {
     var r = Request({
@@ -54,6 +74,8 @@ exports['test outgoing'] = function(assert, done) {
         onComplete: (res) => {
             assert.equal(res.json.content, "tset");
             assert.equal(res.json.method, "PUT");
+            assert.equal(res.json.headers.referer, "http://humanoids.be/");
+            assert.equal(res.json.headers["x-something"], "adsf");
             mod.destroy();
             done();
         }
@@ -70,8 +92,11 @@ exports['test outgoing'] = function(assert, done) {
             assert.equal(req.content, "test", "Content is read correctly");
 
             req.content = "tset";
-            req.referrer = "http://humanoids.be";
+            req.referrer = "http://humanoids.be/";
             req.method = 'PUT';
+            let headers = req.headers;
+            headers["x-something"] = "adsf";
+            req.headers = headers;
         }
     });
     r.post();
