@@ -78,6 +78,7 @@ exports['test incoming'] = function(assert, done) {
             assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot redirect an incoming request");
             req.headers = { "X-Something": "asdf" };
             req.content = "foo";
+            assert.equal(req.content, "foo");
         }
     });
     r.get();
