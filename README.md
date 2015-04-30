@@ -7,12 +7,12 @@ Use with care, as it can slow down requests drastically, since the handler is
 ran sync and blocks the request from getting sent/received.
 
 ## Getting Started
-To install the module, run `npm install --save jetpack-requestmod` in your
+To install the module, run `npm install --save requestmod` in your
 extension's root directory.
 
 You can then use the module inside your extension in the following manner:
 ```js
-var { RequestMod } = require("jetpack-requestmod");
+var { RequestMod } = require("requestmod");
 ```
 
 ## RequestMod Module
