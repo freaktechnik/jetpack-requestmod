@@ -1,14 +1,20 @@
 sudo: false
 language: node_js
 before_install:
-- "export DISPLAY=:99.0"
-- "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR"
+- export DISPLAY=:99.0
+- /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile
+  --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR
 before_script:
 - npm install jpm -g
 - npm install fx-download -g
 - cd ..
 - fx-download --branch nightly -c prerelease --host ftp.mozilla.org firefox
 - cd $TRAVIS_BUILD_DIR
-script:
 - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox
-- jpm test -v
+deploy:
+  provider: npm
+  email: martin@humanoids.be
+  on:
+    tags: true
+  api_key:
+    secure: QHh9kGhuY1/X9QaOSwpEPh1NaaPE275+1szbwNCpim3rft0WcqM3um3gjmTPWa4UZfsXP4HWXSUd7OYHaT25DPuQJaWHE/9+Vfc2KqHal/oKv0KoC/aveJNdE/tfhCUTCQsqB21zEuIzbdFqYLGYZNtSZVKxGjWTBkgfB6kCgBw=
