@@ -9,7 +9,7 @@
 const { Request } = require("sdk/request");
 const { RequestMod } = require("../lib/requestmod");
 const { startServerAsync } = require("./httpd");
-const { CC } = require("chrome");
+const { CC, Cr } = require("chrome");
 const ScriptableInputStream = CC("@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream", "init");
 
 const CONTENT = "<h1>Test</h1>";
@@ -48,7 +48,8 @@ exports['test contract'] = function(assert) {
             direction: [ RequestMod.OUTGOING ],
             requestHandler: () => {}
         });
-    }, "The `url` option must always contain atleast one rule as a string, regular expression, or an array of strings and regular expressions.");
+    },
+    "Contract complains about invalid URL pattern");
 
     assert.throws(() => {
         RequestMod({
@@ -56,7 +57,8 @@ exports['test contract'] = function(assert) {
             direction: RequestMod.INCOMING,
             requestHandler: () => {}
         });
-    }, 'The `direction` option must always be an array with at least one item and each item must have the value of a direction constant.');
+    },
+    "Contract complains about invalid direction");
 
     assert.throws(() => {
         RequestMod({
@@ -64,7 +66,8 @@ exports['test contract'] = function(assert) {
             direction: [ RequestMod.OUTGOING, RequestMod.INCOMING ],
             requestHandler: null
         });
-    }, 'The `requestHandler` option must alwys be a function.');
+    },
+    "Contract complains about requestHandler");
 };
 
 exports['test outgoing'] = function(assert, done) {
@@ -72,10 +75,10 @@ exports['test outgoing'] = function(assert, done) {
         url: ROOT + "echo/",
         content: "test",
         onComplete: (res) => {
-            assert.equal(res.json.content, "tset");
-            assert.equal(res.json.method, "PUT");
-            assert.equal(res.json.headers.referer, "http://humanoids.be/");
-            assert.equal(res.json.headers["x-something"], "adsf");
+            assert.equal(res.json.content, "tset", "Successfully changed request content");
+            assert.equal(res.json.method, "PUT", "Successfully changed request method");
+            assert.equal(res.json.headers.referer, "http://humanoids.be/", "Successfully changed referrer");
+            assert.equal(res.json.headers["x-something"], "adsf", "Successfully added a request header");
             mod.destroy();
             done();
         }
@@ -88,10 +91,11 @@ exports['test outgoing'] = function(assert, done) {
             assert.equal(req.method, 'POST', "Method matches");
             assert.equal(req.direction, RequestMod.OUTGOING, "Direction is correct");
             assert.equal(req.referrer, null, "Referrer is matching");
-            assert.throws(() => req.status, "Status is unavailable for outgoing requests");
-            assert.equal(req.content, "test", "Content is read correctly");
-            assert.equal(req.charset, "UTF-8");
-            assert.equal(req.type, "text/plain");
+            assert.throws(() => req.status, "Cannot get status of an outgoing request");
+            assert.equal(req.content, "test", "Content read correctly");
+            assert.equal(req.charset, "UTF-8", "Charset is correct");
+            assert.equal(req.type, "text/plain", "Content type is correct");
+            assert.throws(() => req.notCached, "notCached throws for outgoing requests");
 
             req.content = "tset";
             req.referrer = "http://humanoids.be/";
@@ -108,8 +112,8 @@ exports['test incoming'] = function(assert, done) {
     var r = Request({
         url: ROOT,
         onComplete: (result) => {
-            assert.equal(result.headers["X-Something"], "asdf");
-            assert.equal(result.text, "foo");
+            assert.equal(result.headers["X-Something"], "asdf", "Successfully added a response header");
+            assert.equal(result.text, "foo", "Successfully changed response content");
             //assert.equal(result.headers["Content-Type"], "text/plain");
             mod.destroy();
             done();
@@ -125,16 +129,17 @@ exports['test incoming'] = function(assert, done) {
             assert.equal(req.referrer, null, "Referrer is matching");
             assert.equal(req.status, 200, "Status code is correct");
             assert.equal(req.charset, "");
-            assert.equal(req.type, "text/html");
+            assert.equal(req.type, "text/html", "Response content type correct");
+            assert.equal(req.notCached, null, "Response cache status correct")
             //assert.equal(req.content, CONTENT); content is empty :(
             req.processContent(function(content) {
                 assert.equal(content, CONTENT);
                 return "foo";
             });
 
-            assert.throws(() => { req.method = 'POST'; }, "The request method can only be set for outgoing requests");
-            assert.throws(() => { req.referrer = 'http://humanoids.be'; }, "Cannot set the referrer of an incoming request");
-            assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot redirect an incoming request");
+            assert.throws(() => { req.method = 'POST'; }, "Cannot set method if an incoming request");
+            assert.throws(() => { req.referrer = 'http://humanoids.be'; }, "Cannot set referrer of an incoming request");
+            assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot set url of an incoming request");
             req.headers = { "X-Something": "asdf" };
             //req.type = "text/plain";
             req.charset = "UTF-8";

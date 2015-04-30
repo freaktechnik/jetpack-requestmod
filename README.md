@@ -48,6 +48,8 @@ A callback function that gets passed an `OngoingRequest` object. Must execute
 actions on the `OngoingRequest` object synchronously.
 
 ### OngoingRequest
+This object genereally throws error when impossible actions are atempted.
+
 #### Properties
 ##### url
 The URL of the request as a string. Can only be written for outgoing requests.
@@ -66,11 +68,17 @@ Readonly statuscode of an incoming request.
 
 ##### headers
 Headers object. Headers are only changed if the headers property itself is
-overwritten.
+overwritten. Existing headers are never removed, only overwritten. Some headers
+might not be writeable and cause an error to be thrown.
 
 ##### content
 Read and set the content. The reading part is not reliable for incoming
 requests, due to the content's streaming nature.
+
+##### notCached
+Returns `true` if the request is for sure not cached, else `null` (not false,
+as it's not sure that it is in fact coming from the cache). Not readable for
+outgoing requests.
 
 ##### direction
 Readonly value for the direction of the request, so it's either
@@ -86,8 +94,8 @@ Allows to process the full content into new content, however the callback is
 possibly executed asynchronously and the `OngoingRequest` object might have been
 [destroyed](#destroy) by then.
 ###### Arguments
-__callback__: `function` executed as soon as the content is known. Should return the
-new content.
+__callback__: `function` executed as soon as the content is known. Should
+return the new content.
 
 Default value: `null`
 
