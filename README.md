@@ -26,7 +26,7 @@ Constant signifying an outgoing request, as in a request going to a server.
 #### RequestMod.INCOMING
 Constant for incoming requests, as in coming from a server. You generally want
 to avoid this direction, except for modifying incoming headers.
-It's generally advised to try an alternative method from [intercept][] instead.
+It's generally advised to try an alternative method from [][intercept] instead.
 This implementation covers the "HTTP Observers" part.
 
 ### RequestMod(options)
@@ -34,7 +34,7 @@ Constructs a new `RequestMod` instance.
 
 #### Options
 ##### url
-An url pattern string with `*` wildcards (see [match-pattern][] for detailed
+An url pattern string with `*` wildcards (see [][match-pattern] for detailed
 documentation on the syntax) or a regular expression or an array of such
 elements.
 
