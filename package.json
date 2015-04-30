@@ -11,6 +11,7 @@
   },
   "license": "MPL-2.0",
   "devDependencies": {
+    "addon-httpd": "0.0.3",
     "jpm": "*"
   },
   "scripts": {
@@ -23,5 +24,11 @@
   "bugs": {
     "url": "https://github.com/freaktechnik/jetpack-requestmod/issues"
   },
-  "keywords": ["add-on sdk", "jetpack", "firefox", "request", "modify"]
+  "keywords": [
+    "add-on sdk",
+    "jetpack",
+    "firefox",
+    "request",
+    "modify"
+  ]
 }

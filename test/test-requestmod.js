@@ -8,7 +8,7 @@
 
 const { Request } = require("sdk/request");
 const { RequestMod } = require("../lib/requestmod");
-const { startServerAsync } = require("./httpd");
+const { startServerAsync } = require("addon-httpd");
 const { CC, Cr } = require("chrome");
 const ScriptableInputStream = CC("@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream", "init");
 
