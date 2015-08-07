@@ -12,38 +12,42 @@ const { Request } = require("sdk/request");
 const { RequestMod } = require("../lib/requestmod");
 const { startServerAsync } = require("addon-httpd");
 const { when } = require("sdk/event/utils");
+const { before, after } = require("sdk/test/utils");
 const { CC, Cr } = require("chrome");
 const ScriptableInputStream = CC("@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream", "init");
 
 // Set up the server
 const CONTENT = "<h1>Test</h1>";
-let srv = startServerAsync(-1);
-srv.registerPathHandler("/", function(request, response) {
-    response.processAsync();
-    response.setHeader('Content-Type', 'text/html', false);
-    response.write(CONTENT);
-    response.finish();
-});
+var PORT, ROOT, srv;
+let startServer = () => {
+    srv = startServerAsync(-1);
+    srv.registerPathHandler("/", function(request, response) {
+        response.processAsync();
+        response.setHeader('Content-Type', 'text/html', false);
+        response.write(CONTENT);
+        response.finish();
+    });
 
-srv.registerPathHandler("/echo/", function(request, response) {
-    response.processAsync();
-    response.setHeader('Content-Type', 'application/json', false);
-    let obj = {};
-    obj.content = new ScriptableInputStream(request.bodyInputStream).read(4);
-    let headers = {}, h = request.headers, s;
-    while(h.hasMoreElements()) {
-        s = h.getNext().toString();
-        headers[s] = request.getHeader(s);
-    }
-    obj.headers = headers;
-    obj.method = request.method;
+    srv.registerPathHandler("/echo/", function(request, response) {
+        response.processAsync();
+        response.setHeader('Content-Type', 'application/json', false);
+        let obj = {};
+        obj.content = new ScriptableInputStream(request.bodyInputStream).read(4);
+        let headers = {}, h = request.headers, s;
+        while(h.hasMoreElements()) {
+            s = h.getNext().toString();
+            headers[s] = request.getHeader(s);
+        }
+        obj.headers = headers;
+        obj.method = request.method;
 
-    response.write(JSON.stringify(obj));
-    response.finish();
-});
+        response.write(JSON.stringify(obj));
+        response.finish();
+    });
 
-const PORT = srv.identity.primaryPort;
-const ROOT = 'http://localhost:'+PORT+'/';
+    PORT = srv.identity.primaryPort;
+    ROOT = 'http://localhost:'+PORT+'/';
+};
 
 // end of server setup
 
@@ -77,6 +81,7 @@ exports['test contract'] = function(assert) {
 };
 
 exports['test outgoing'] = function*(assert) {
+    console.log(ROOT);
     var r = Request({
         url: ROOT + "echo/",
         content: "test"
@@ -220,5 +225,12 @@ exports['test redirect'] = function*(assert) {
 };
 
 //TODO test contracts
+
+before(exports, (name, assert) => {
+    startServer();
+});
+after(exports, (name, assert, done) => {
+    srv.stop(done);
+});
 
 require("sdk/test").run(exports);
