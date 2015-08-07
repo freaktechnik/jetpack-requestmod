@@ -6,12 +6,16 @@
  * obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+"use strict";
+
 const { Request } = require("sdk/request");
 const { RequestMod } = require("../lib/requestmod");
 const { startServerAsync } = require("addon-httpd");
+const { when } = require("sdk/event/utils");
 const { CC, Cr } = require("chrome");
 const ScriptableInputStream = CC("@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream", "init");
 
+// Set up the server
 const CONTENT = "<h1>Test</h1>";
 let srv = startServerAsync(-1);
 srv.registerPathHandler("/", function(request, response) {
@@ -40,6 +44,8 @@ srv.registerPathHandler("/echo/", function(request, response) {
 
 const PORT = srv.identity.primaryPort;
 const ROOT = 'http://localhost:'+PORT+'/';
+
+// end of server setup
 
 exports['test contract'] = function(assert) {
     assert.throws(() => {
@@ -70,18 +76,10 @@ exports['test contract'] = function(assert) {
     "Contract complains about requestHandler");
 };
 
-exports['test outgoing'] = function(assert, done) {
+exports['test outgoing'] = function*(assert) {
     var r = Request({
         url: ROOT + "echo/",
-        content: "test",
-        onComplete: (res) => {
-            assert.equal(res.json.content, "tset", "Successfully changed request content");
-            assert.equal(res.json.method, "PUT", "Successfully changed request method");
-            assert.equal(res.json.headers.referer, "http://humanoids.be/", "Successfully changed referrer");
-            assert.equal(res.json.headers["x-something"], "adsf", "Successfully added a request header");
-            mod.destroy();
-            done();
-        }
+        content: "test"
     });
     var mod = RequestMod({
         url: 'http://localhost*',
@@ -105,19 +103,22 @@ exports['test outgoing'] = function(assert, done) {
             req.headers = headers;
         }
     });
+
     r.post();
+
+    let res = yield when(r, "complete");
+
+    assert.equal(res.json.content, "tset", "Successfully changed request content");
+    assert.equal(res.json.method, "PUT", "Successfully changed request method");
+    assert.equal(res.json.headers.referer, "http://humanoids.be/", "Successfully changed referrer");
+    assert.equal(res.json.headers["x-something"], "adsf", "Successfully added a request header");
+
+    mod.destroy();
 };
 
-exports['test incoming'] = function(assert, done) {
+exports['test incoming'] = function*(assert) {
     var r = Request({
-        url: ROOT,
-        onComplete: (result) => {
-            assert.equal(result.headers["X-Something"], "asdf", "Successfully added a response header");
-            assert.equal(result.text, "foo", "Successfully changed response content");
-            //assert.equal(result.headers["Content-Type"], "text/plain");
-            mod.destroy();
-            done();
-        }
+        url: ROOT
     });
     var mod = RequestMod({
         url: 'http://localhost*',
@@ -130,9 +131,9 @@ exports['test incoming'] = function(assert, done) {
             assert.equal(req.status, 200, "Status code is correct");
             assert.equal(req.charset, "");
             assert.equal(req.type, "text/html", "Response content type correct");
-            assert.equal(req.notCached, null, "Response cache status correct")
+            assert.equal(req.notCached, null, "Response cache status correct");
             //assert.equal(req.content, CONTENT); content is empty :(
-            req.processContent(function(content) {
+            req.processContent((content) => {
                 assert.equal(content, CONTENT);
                 return "foo";
             });
@@ -145,17 +146,20 @@ exports['test incoming'] = function(assert, done) {
             req.charset = "UTF-8";
         }
     });
+
     r.get();
+
+    let result = yield when(r, "complete");
+
+    assert.equal(result.headers["X-Something"], "asdf", "Successfully added a response header");
+    assert.equal(result.text, "foo", "Successfully changed response content");
+    //assert.equal(result.headers["Content-Type"], "text/plain");
+    mod.destroy();
 };
 
-exports['test abort outgoing'] = function(assert, done) {
+exports['test abort outgoing'] = function*(assert) {
     var r = Request({
-        url: ROOT,
-        onComplete: function(response) {
-            assert.equal(response.status, 0, "Request has been aborted");
-            mod.destroy();
-            done();
-        }
+        url: ROOT
     });
     var mod = RequestMod({
         url: 'http://localhost*',
@@ -164,17 +168,18 @@ exports['test abort outgoing'] = function(assert, done) {
             req.abort();
         }
     });
+
     r.get();
+
+    yield when(r, "complete");
+
+    assert.equal(r.response.status, 0, "Request has been aborted");
+    mod.destroy();
 };
 
-exports['test abort incoming'] = function(assert, done) {
+exports['test abort incoming'] = function*(assert) {
     var r = Request({
-        url: ROOT,
-        onComplete: function(response) {
-            assert.equal(response.status, 0, "Request has been aborted");
-            mod.destroy();
-            done();
-        }
+        url: ROOT
     });
     var mod = RequestMod({
         url: 'http://localhost*',
@@ -183,17 +188,18 @@ exports['test abort incoming'] = function(assert, done) {
             req.abort();
         }
     });
+
     r.get();
+
+    yield when(r, "complete");
+
+    assert.equal(r.response.status, 0, "Request has been aborted");
+    mod.destroy();
 };
 
-exports['test redirect'] = function(assert, done) {
+exports['test redirect'] = function*(assert) {
     var r = Request({
-        url: ROOT + "echo/",
-        onComplete: function(res) {
-            assert.equal(res.text, CONTENT, "Request successfully redirected");
-            mod.destroy();
-            done();
-        }
+        url: ROOT + "echo/"
     });
     var mod = RequestMod({
         url: 'http://localhost*',
@@ -204,7 +210,13 @@ exports['test redirect'] = function(assert, done) {
                 req.url = ROOT;
         }
     });
+
     r.get();
+
+    let res = yield when(r, "complete");
+
+    assert.equal(res.text, CONTENT, "Request successfully redirected");
+    mod.destroy();
 };
 
 //TODO test contracts
