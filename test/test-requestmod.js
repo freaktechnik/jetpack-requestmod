@@ -81,7 +81,6 @@ exports['test contract'] = function(assert) {
 };
 
 exports['test outgoing'] = function*(assert) {
-    console.log(ROOT);
     var r = Request({
         url: ROOT + "echo/",
         content: "test"
