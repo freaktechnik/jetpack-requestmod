@@ -7,6 +7,8 @@ Use with care, as it can slow down requests drastically, since the handler is
 ran sync and blocks the request from getting sent/received.
 
 ## Getting Started
+Please first consider using [WebRequest.jsm](https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/WebRequest.jsm) instead of this module. I hope to eventually move this module to WebRequest.jsm too, if possible. This will also add the possibility for normal events that can't modify requests.
+
 To install the module, run `npm install --save requestmod` in your
 extension's root directory.
 
