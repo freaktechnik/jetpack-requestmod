@@ -8,7 +8,7 @@ before_script:
 - npm install jpm -g
 - npm install fx-download -g
 - cd ..
-- fx-download --branch nightly -c prerelease --host ftp.mozilla.org firefox
+- fx-download --branch nightly -c prerelease --host archive.mozilla.org firefox
 - cd $TRAVIS_BUILD_DIR
 - export JPM_FIREFOX_BINARY=$TRAVIS_BUILD_DIR/../firefox/firefox
 deploy:
