@@ -10,7 +10,7 @@
 
 const { Request } = require("sdk/request");
 const { RequestMod } = require("../lib/requestmod");
-const { startServerAsync } = require("addon-httpd");
+const { startServerAsync } = require("./httpd");
 const { when } = require("sdk/event/utils");
 const { before, after } = require("sdk/test/utils");
 const { CC, Cr } = require("chrome");
