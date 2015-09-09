@@ -1,7 +1,7 @@
 {
   "title": "RequestMod",
   "name": "requestmod",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Modify ongoing requests using the Firefox Add-on SDK",
   "main": "lib/requestmod.js",
   "author": "freaktechnik (http://humanoids.be)",
