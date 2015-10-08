@@ -94,12 +94,10 @@ Abort the request immediately.
 ##### processContent(callback)
 Allows to process the full content into new content, however the callback is
 possibly executed asynchronously and the `OngoingRequest` object might have been
-[destroyed](#destroy) by then. The callback gets passed the full content as an argument
-and the returned value is set as new content, so if you don't return anything the content
-gets voided.
+[destroyed](#destroy) by then.
 ###### Arguments
 __callback__: `function` executed as soon as the content is known. Should
-return the new content.
+return the new content (else the content gets set to `undefined`).
 
 Default value: `null`
 
