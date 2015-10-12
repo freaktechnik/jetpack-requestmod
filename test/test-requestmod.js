@@ -96,7 +96,7 @@ exports['test outgoing'] = function*(assert) {
             assert.throws(() => req.status, "Cannot get status of an outgoing request");
             assert.equal(req.content, "test", "Content read correctly");
             assert.equal(req.charset, "UTF-8", "Charset is correct");
-            assert.equal(req.type, "text/plain", "Content type is correct");
+            assert.equal(req.type, "application/x-www-form-urlencoded", "Content type is correct");
             assert.throws(() => req.notCached, "notCached throws for outgoing requests");
 
             req.content = "tset";
@@ -220,6 +220,51 @@ exports['test redirect'] = function*(assert) {
     let res = yield when(r, "complete");
 
     assert.equal(res.text, CONTENT, "Request successfully redirected");
+    mod.destroy();
+};
+
+exports['test null content'] = function*(assert) {
+    var r = Request({
+        url: ROOT,
+        content: "test"
+    });
+
+    var mod = RequestMod({
+        url: 'http://localhost*',
+        direction: [ RequestMod.OUTGOING ],
+        requestHandler: function(req) {
+            assert.equal(req.content, "test");
+            req.content = null;
+            assert.equal(req.content, null, "Content correctly set to null");
+            //TODO fix requests with their content set to null never completing. See #2
+            req.content = "test";
+        }
+    });
+
+    let p = when(r, "complete");
+    r.post();
+    yield p;
+
+    mod.destroy();
+};
+
+exports['test method not reset'] = function*(assert) {
+    var r = Request({
+        url: ROOT
+    });
+    var mod = RequestMod({
+        url: 'http://localhost*',
+        direction: [ RequestMod.OUTGOING ],
+        requestHandler: function(req) {
+            assert.equal(req.method, "POST");
+            req.content = "test";
+            assert.equal(req.method, "POST");
+        }
+    });
+
+    r.post();
+    yield when(r, "complete");
+
     mod.destroy();
 };
 
