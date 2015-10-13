@@ -69,9 +69,7 @@ The request method as string. Can only be written for outgoing requests.
 Readonly statuscode of an incoming request.
 
 ##### headers
-Headers object. Headers are only changed if the headers property itself is
-overwritten. Existing headers are never removed, only overwritten. Some headers
-might not be writeable and cause an error to be thrown.
+Headers object. See the `Headers` documentation.
 
 ##### content
 Read and set the content. The reading part is not reliable for incoming
@@ -106,6 +104,48 @@ Destroy the `OngoingRequest` object. You should never have to call that, as it
 is destroyed after the [`requestHandler`](#requesthandler) is executed.
 When the object is destroyed, most methods will not work.
 
+### Headers
+Headers is an object to access and modify headers of a request. It implements an
+interface similar to the JS `Map` object. It also implements the iterable
+protocol, so you can iterate over it with for...of loops. Each value when
+iterating is an object with a property `header` storing the name of the header
+and `value` containing the header's value.
+
+#### Methods
+##### has(headerName)
+Check if a header is set.
+
+###### Arguments
+__headerName__: `string` of the case sensitive name of the header.
+
+##### get(headerName)
+Gets the value of the specified header. Returns `undefined` if the header is not
+set.
+
+###### Arguments
+__headerName__: `string`  of the case sensitive name of the header.
+
+##### set(headerName, value)
+Sets the value of the specified header. Replaces the existing value or creates a
+new header if a header with the given name doesn't exist yet.
+
+###### Arguments
+__headerName__: `string` of the case sensitive name of the header.
+
+__value__: `string` of the value to set the header to.
+
+##### delete(headerName)
+Removes a header from the request.
+
+###### Arguments
+__headerName__: `string` of the case sensitive name of the header.
+
+##### forEach(callback)
+Iterates over every set header.
+
+###### Arguments
+__callback__: `function` that takes two arguments: the first one is the name of
+the header, the second one is the value of the header.
 
 [match-pattern]: https://developer.mozilla.org/en-US/Add-ons/SDK/Low-Level_APIs/util_match-pattern "SDK match-pattern module"
 [intercept]: https://developer.mozilla.org/en-US/Add-ons/Overlay_Extensions/XUL_School/Intercepting_Page_Loads "Intercept Page Loads"

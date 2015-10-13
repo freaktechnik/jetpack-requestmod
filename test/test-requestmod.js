@@ -80,6 +80,12 @@ exports['test contract'] = function(assert) {
     "Contract complains about requestHandler");
 };
 
+exports['test constants'] = function(assert) {
+    const { INCOMING, OUTGOING } = require("../lib/const");
+    assert.equal(INCOMING, RequestMod.INCOMING, "The constant for incoming requests matches.");
+    assert.equal(OUTGOING, RequestMod.OUTGOING, "The constant for outgoing requests matches.");
+};
+
 exports['test outgoing'] = function*(assert) {
     var r = Request({
         url: ROOT + "echo/",
@@ -102,9 +108,7 @@ exports['test outgoing'] = function*(assert) {
             req.content = "tset";
             req.referrer = "http://humanoids.be/";
             req.method = 'PUT';
-            let headers = req.headers;
-            headers["x-something"] = "adsf";
-            req.headers = headers;
+            req.headers.set("x-something", "adsf");
         }
     });
 
@@ -145,7 +149,7 @@ exports['test incoming'] = function*(assert) {
             assert.throws(() => { req.method = 'POST'; }, "Cannot set method if an incoming request");
             assert.throws(() => { req.referrer = 'http://humanoids.be'; }, "Cannot set referrer of an incoming request");
             assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot set url of an incoming request");
-            req.headers = { "X-Something": "asdf" };
+            req.headers.set("X-Something", "asdf");
             //req.type = "text/plain";
             req.charset = "UTF-8";
         }
@@ -157,7 +161,7 @@ exports['test incoming'] = function*(assert) {
 
     assert.equal(result.headers["X-Something"], "asdf", "Successfully added a response header");
     assert.equal(result.text, "foo", "Successfully changed response content");
-    //assert.equal(result.headers["Content-Type"], "text/plain");
+    assert.equal(result.headers["Content-Type"], "text/html");
     mod.destroy();
 };
 
