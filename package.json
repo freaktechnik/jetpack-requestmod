@@ -29,5 +29,8 @@
     "firefox",
     "request",
     "modify"
-  ]
+  ],
+  "dependencies": {
+    "is-typedarray": "^1.0.0"
+  }
 }
