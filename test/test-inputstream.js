@@ -52,6 +52,24 @@ exports.testStringStreamObject = function(assert) {
     assert.ok(objectEqual(JSON.parse(content), testObject), "Object correctly serialized");
 };
 
+exports.testStreamStream = function(assert) {
+    const { stream: testStream } = InputStream("foo bar");
+
+    let { stream } = InputStream(testStream);
+
+    assert.equal(stream, testStream, "Same stream");
+};
+
+exports.testInputStreamStream = function(assert) {
+    const testStream = InputStream("foo bar");
+
+    let stream = InputStream(testStream);
+
+    assert.equal(stream.data, testStream, "Data of the new stream is the previous input stream");
+
+    assert.equal(stream.stream, testStream.stream, "Same stream");
+};
+
 //TODO test buffer
 
 require("sdk/test").run(exports);
