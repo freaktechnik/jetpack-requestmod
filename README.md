@@ -75,7 +75,7 @@ Headers object. See the `Headers` documentation.
 Read and set the content. The reading part is not reliable for incoming
 requests, due to the content's streaming nature.
 
-The content can be set to an SDK buffer, any string, object or a
+The content can be set to an SDK buffer, TypedArrays, ArrayBuffers, any string, object or a
 nsIInputStream directly.
 
 The returned value will always be parsed to a string by default. If the stream
