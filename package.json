@@ -1,7 +1,7 @@
 {
   "title": "RequestMod",
   "name": "requestmod",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Modify ongoing requests using the Firefox Add-on SDK",
   "main": "lib/requestmod.js",
   "author": "freaktechnik (http://humanoids.be)",
@@ -28,7 +28,10 @@
     "jetpack",
     "firefox",
     "request",
-    "modify"
+    "modify",
+    "response",
+    "intercept",
+    "abort"
   ],
   "dependencies": {
     "is-typedarray": "^1.0.0"
