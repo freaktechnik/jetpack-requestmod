@@ -18,3 +18,6 @@ deploy:
     tags: true
   api_key:
     secure: QHh9kGhuY1/X9QaOSwpEPh1NaaPE275+1szbwNCpim3rft0WcqM3um3gjmTPWa4UZfsXP4HWXSUd7OYHaT25DPuQJaWHE/9+Vfc2KqHal/oKv0KoC/aveJNdE/tfhCUTCQsqB21zEuIzbdFqYLGYZNtSZVKxGjWTBkgfB6kCgBw=
+branches:
+  only:
+    - master
