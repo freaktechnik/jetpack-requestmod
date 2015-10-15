@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: requestmod</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Module: requestmod</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Simple interface for request modification in Firefox. Use with care, as it
+can slow down requests drastically, since the handler is ran sync and blocks
+the request from getting sent/received. And you can in theory look at all the
+user's traffic.
+
+It's generally advised to try an alternative method from
+<a href="https://developer.mozilla.org/en-US/Add-ons/Overlay_Extensions/XUL_School/Intercepting_Page_Loads">MDN: Intercept Page Loads</a>
+instead. This implementation covers the "HTTP Observers" part.</div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Martin Giger</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li>MPL-2.0</li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="requestmod.js.html">requestmod.js</a>, <a href="requestmod.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-requestmod.RequestMod.html">RequestMod</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".INCOMING"><span class="type-signature">(static, constant) </span>INCOMING<span class="type-signature"> :number</span></h4>
+
+
+
+
+<div class="description">
+    Constant signifying an outgoing request, as in a request going to a server.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>0</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="const.js.html">const.js</a>, <a href="const.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".OUTGOING"><span class="type-signature">(static, constant) </span>OUTGOING<span class="type-signature"> :number</span></h4>
+
+
+
+
+<div class="description">
+    Constant for incoming requests, as in coming from a server. You generally
+want to avoid this direction, except for modifying incoming headers.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>1</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="const.js.html">const.js</a>, <a href="const.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+
+    
+
+    <h4 class="name" id="~requestCallback"><span class="type-signature"></span>requestCallback<span class="signature">(request)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Must execute actions on the `OngoingRequest` object synchronously.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>request</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-lib_ongoingrequest.OngoingRequest.html">module:lib/ongoingrequest.OngoingRequest</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="requestmod.js.html">requestmod.js</a>, <a href="requestmod.js.html#line71">line 71</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="~RequestModOptions">RequestModOptions</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>direction</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;(<a href="module-requestmod.html#.INCOMING">module:requestmod.INCOMING</a>|<a href="module-requestmod.html#.OUTGOING">module:requestmod.OUTGOING</a>)></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The request
+directions that should be listened for</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;(string|RegExp)></span>
+|
+
+<span class="param-type">RegExp</span>
+|
+
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">An url pattern
+string with '*' wildcards
+(see <a href="https://developer.mozilla.org/en-US/Add-ons/SDK/Low-Level_APIs/util_match-pattern">MDN: SDK match-pattern module</a>
+for detailed documentation on the syntax) or a regular expression or an array of such
+elements.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>requestHandler</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-requestmod.html#~requestCallback">module:requestmod~requestCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="requestmod.js.html">requestmod.js</a>, <a href="requestmod.js.html#line76">line 76</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-lib_channellistener.html">lib/channellistener</a></li><li><a href="module-lib_const.html">lib/const</a></li><li><a href="module-lib_headers.html">lib/headers</a></li><li><a href="module-lib_inputstream.html">lib/inputstream</a></li><li><a href="module-lib_ongoingrequest.html">lib/ongoingrequest</a></li><li><a href="module-requestmod.html">requestmod</a></li></ul><h3>Externals</h3><ul><li><a href="external-sdk_core_disposable.html">sdk/core/disposable</a></li><li><a href="external-sdk_platform_xpcom.html">sdk/platform/xpcom</a></li></ul><h3>Classes</h3><ul><li><a href="external-sdk_core_disposable.Disposable.html">Disposable</a></li><li><a href="external-sdk_platform_xpcom.Unknown.html">Unknown</a></li><li><a href="module-lib_channellistener.ChannelListener.html">ChannelListener</a></li><li><a href="module-lib_headers.Headers.html">Headers</a></li><li><a href="module-lib_inputstream.InputStream.html">InputStream</a></li><li><a href="module-lib_ongoingrequest.OngoingRequest.html">OngoingRequest</a></li><li><a href="module-requestmod.RequestMod.html">RequestMod</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Thu Oct 15 2015 14:01:21 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
