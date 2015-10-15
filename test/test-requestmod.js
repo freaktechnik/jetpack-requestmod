@@ -98,7 +98,7 @@ exports['test outgoing'] = function*(assert) {
             assert.equal(req.url, r.url, "URL property works correctly");
             assert.equal(req.method, 'POST', "Method matches");
             assert.equal(req.direction, RequestMod.OUTGOING, "Direction is correct");
-            assert.equal(req.referrer, null, "Referrer is matching");
+            assert.equal(req.referer, "", "Referer is matching");
             assert.throws(() => req.status, "Cannot get status of an outgoing request");
             assert.equal(req.content, "test", "Content read correctly");
             assert.equal(req.charset, "UTF-8", "Charset is correct");
@@ -106,7 +106,7 @@ exports['test outgoing'] = function*(assert) {
             assert.throws(() => req.notCached, "notCached throws for outgoing requests");
 
             req.content = "tset";
-            req.referrer = "http://humanoids.be/";
+            req.referer = "http://humanoids.be/";
             req.method = 'PUT';
             req.headers.set("x-something", "adsf");
         }
@@ -118,7 +118,7 @@ exports['test outgoing'] = function*(assert) {
 
     assert.equal(res.json.content, "tset", "Successfully changed request content");
     assert.equal(res.json.method, "PUT", "Successfully changed request method");
-    assert.equal(res.json.headers.referer, "http://humanoids.be/", "Successfully changed referrer");
+    assert.equal(res.json.headers.referer, "http://humanoids.be/", "Successfully changed referer");
     assert.equal(res.json.headers["x-something"], "adsf", "Successfully added a request header");
 
     mod.destroy();
@@ -135,7 +135,7 @@ exports['test incoming'] = function*(assert) {
             assert.equal(req.url, r.url, "URL property matches the one of the request");
             assert.equal(req.method, 'GET', "Method matches");
             assert.equal(req.direction, RequestMod.INCOMING, "Direction is correct");
-            assert.equal(req.referrer, null, "Referrer is matching");
+            assert.equal(req.referer, "", "Referer is matching");
             assert.equal(req.status, 200, "Status code is correct");
             assert.equal(req.charset, "");
             assert.equal(req.type, "text/html", "Response content type correct");
@@ -147,7 +147,7 @@ exports['test incoming'] = function*(assert) {
             });
 
             assert.throws(() => { req.method = 'POST'; }, "Cannot set method if an incoming request");
-            assert.throws(() => { req.referrer = 'http://humanoids.be'; }, "Cannot set referrer of an incoming request");
+            assert.throws(() => { req.referer = 'http://humanoids.be'; }, "Cannot set referrer of an incoming request");
             assert.throws(() => { req.url = 'http://humanoids.be'; }, "Cannot set url of an incoming request");
             req.headers.set("X-Something", "asdf");
             //req.type = "text/plain";
