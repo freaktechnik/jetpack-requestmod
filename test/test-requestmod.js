@@ -140,7 +140,6 @@ exports['test incoming'] = function*(assert) {
             assert.equal(req.charset, "");
             assert.equal(req.type, "text/html", "Response content type correct");
             assert.equal(req.notCached, null, "Response cache status correct");
-            //assert.equal(req.content, CONTENT); content is empty :(
             req.processContent((content) => {
                 assert.equal(content, CONTENT);
                 return "foo";
