@@ -102,13 +102,18 @@ exports['test outgoing'] = function*(assert) {
             assert.throws(() => req.status, "Cannot get status of an outgoing request");
             assert.equal(req.content, "test", "Content read correctly");
             assert.equal(req.charset, "UTF-8", "Charset is correct");
-            assert.equal(req.type, "application/x-www-form-urlencoded", "Content type is correct");
+            assert.equal(req.type, "application/x-www-form-urlencoded; charset=UTF-8", "Content type is correct");
             assert.throws(() => req.notCached, "notCached throws for outgoing requests");
 
             req.content = "tset";
             req.referer = "http://humanoids.be/";
             req.method = 'PUT';
             req.headers.set("x-something", "adsf");
+
+            assert.equal(req.content, "tset", "Setting content is immediate");
+            assert.equal(req.referer, "http://humanoids.be/", "Setting referrer is immediate");
+            assert.equal(req.method, "PUT", "Setting method is immediate");
+            assert.ok(req.headers.has("x-something"), "Header is set immediately");
         }
     });
 
@@ -236,7 +241,7 @@ exports['test null content'] = function*(assert) {
         url: 'http://localhost*',
         direction: [ RequestMod.OUTGOING ],
         requestHandler: function(req) {
-            assert.equal(req.content, "test");
+            assert.equal(req.content, "test", "Content read correctly");
             req.content = null;
             assert.equal(req.content, null, "Content correctly set to null");
             //TODO fix requests with their content set to null never completing. See #2
@@ -251,7 +256,7 @@ exports['test null content'] = function*(assert) {
     mod.destroy();
 };
 
-exports['test method not reset'] = function*(assert) {
+exports['test POST method not reset'] = function*(assert) {
     var r = Request({
         url: ROOT
     });
@@ -259,13 +264,33 @@ exports['test method not reset'] = function*(assert) {
         url: 'http://localhost*',
         direction: [ RequestMod.OUTGOING ],
         requestHandler: function(req) {
-            assert.equal(req.method, "POST");
+            assert.equal(req.method, "POST", "Method is POST to begin with");
             req.content = "test";
-            assert.equal(req.method, "POST");
+            assert.equal(req.method, "POST", "Method is still POST after changing the content");
         }
     });
 
     r.post();
+    yield when(r, "complete");
+
+    mod.destroy();
+};
+
+exports['test PUT method not reset'] = function*(assert) {
+    var r = Request({
+        url: ROOT
+    });
+    var mod = RequestMod({
+        url: 'http://localhost*',
+        direction: [ RequestMod.OUTGOING ],
+        requestHandler: function(req) {
+            assert.equal(req.method, "PUT", "Method is PUT to begin with");
+            req.content = "test";
+            assert.equal(req.method, "PUT", "Method is still PUT after changing the content");
+        }
+    });
+
+    r.put();
     yield when(r, "complete");
 
     mod.destroy();

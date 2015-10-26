@@ -27,10 +27,16 @@ function objectEqual(a, b) {
 }
 
 exports.testStringStream = function(assert) {
-    const testString = "Lorem ipsum";
-    let { stream } = InputStream(testString);
+    const testString = "Lörem ïpsum";
+    let { stream, length } = InputStream(testString, {
+        charset: "UTF-8"
+    });
 
-    let content = NetUtil.readInputStreamToString(stream, stream.available(), {});
+    assert.equal(length, stream.available());
+
+    let content = NetUtil.readInputStreamToString(stream, length, {
+        charset: "UTF-8"
+    });
 
     assert.equal(content, testString, "Stream correctly set");
 };
@@ -39,25 +45,34 @@ exports.testStringStreamObject = function(assert) {
     const testObject = {
         a: "b",
         hallo: [
-            "a",
+            "ä",
             2
         ],
         test: 2
     };
-    let { stream } = InputStream(testObject);
+    let { stream, data, length } = InputStream(testObject, {
+        charset: "UTF-8"
+    });
 
-    let content = NetUtil.readInputStreamToString(stream, stream.available(), {});
+    assert.equal(length, stream.available());
+
+    let content = NetUtil.readInputStreamToString(stream, length, {
+        charset: "UTF-8"
+    });
 
     assert.equal(content, JSON.stringify(testObject), "Stream correctly set");
     assert.ok(objectEqual(JSON.parse(content), testObject), "Object correctly serialized");
+    assert.ok(objectEqual(data, testObject));
 };
 
 exports.testStreamStream = function(assert) {
-    const { stream: testStream } = InputStream("foo bar");
+    const testStream = InputStream("foo bar");
 
-    let { stream } = InputStream(testStream);
+    let stream = InputStream(testStream.stream);
 
-    assert.equal(stream, testStream, "Same stream");
+    assert.equal(testStream.length, stream.length, "Same length");
+    assert.equal(testStream.data, stream.data, "Same data");
+    assert.equal(stream.length, stream.stream.available());
 };
 
 exports.testInputStreamStream = function(assert) {
@@ -65,11 +80,13 @@ exports.testInputStreamStream = function(assert) {
 
     let stream = InputStream(testStream);
 
-    assert.equal(stream.data, testStream, "Data of the new stream is the previous input stream");
+    assert.equal(stream.data, testStream.data, "Data of the new stream is the same");
 
-    assert.equal(stream.stream, testStream.stream, "Same stream");
+    assert.notEqual(stream.stream, testStream.stream, "Different streams");
+    assert.equal(stream.length, testStream.length, "Same length");
 };
 
+//TODO test null
 //TODO test buffer
 
 require("sdk/test").run(exports);
