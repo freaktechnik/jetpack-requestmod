@@ -86,7 +86,12 @@ exports.testInputStreamStream = function(assert) {
     assert.equal(stream.length, testStream.length, "Same length");
 };
 
-//TODO test null
+exports.testNull = function(assert) {
+    let stream = InputStream(null);
+    assert.equal(stream.data, null, "Data is null");
+    assert.equal(stream.length, 0, "Length is 0");
+};
+
 //TODO test buffer
 
 require("sdk/test").run(exports);
