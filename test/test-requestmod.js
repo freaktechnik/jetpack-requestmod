@@ -13,8 +13,7 @@ const { RequestMod } = require("../lib/requestmod");
 const { startServerAsync } = require("./httpd");
 const { when } = require("sdk/event/utils");
 const { before, after } = require("sdk/test/utils");
-const { CC, Cr } = require("chrome");
-const ScriptableInputStream = CC("@mozilla.org/scriptableinputstream;1", "nsIScriptableInputStream", "init");
+const { InputStream } = require("../lib/inputstream");
 
 // Set up the server
 const CONTENT = "<h1>Test</h1>";
@@ -32,7 +31,7 @@ let startServer = () => {
         response.processAsync();
         response.setHeader('Content-Type', 'application/json', false);
         let obj = {};
-        obj.content = new ScriptableInputStream(request.bodyInputStream).read(4);
+        obj.content = (new InputStream(request.bodyInputStream)).data;
         let headers = {}, h = request.headers, s;
         while(h.hasMoreElements()) {
             s = h.getNext().toString();
@@ -43,6 +42,18 @@ let startServer = () => {
 
         response.write(JSON.stringify(obj));
         response.finish();
+    });
+    srv.registerPathHandler("/test-image.png", function(request, response) {
+        response.processAsync();
+        response.setHeader("Content-Type", "image/png", false);
+        var r = Request({
+            url: module.uri.replace(/[^\.\\\/]*\.js$/, "test-image.png"),
+            onComplete: (res) => {
+                response.write(res.text);
+                response.finish();
+            }
+        });
+        r.get();
     });
 
     PORT = srv.identity.primaryPort;
@@ -294,6 +305,41 @@ exports['test PUT method not reset'] = function*(assert) {
     yield when(r, "complete");
 
     mod.destroy();
+};
+
+exports['test incoming image'] = function*(assert) {
+    var testImageURL = ROOT + "test-image.png";
+
+    var unmodifiedRequest = Request({
+        url: testImageURL
+    });
+    unmodifiedRequest.get();
+    let unmodifiedResult = yield when(unmodifiedRequest, "complete");
+
+    var r = Request({
+        url: testImageURL
+    });
+    var content;
+    var mod = RequestMod({
+        url: testImageURL,
+        direction: [ RequestMod.INCOMING ],
+        requestHandler: (req) => {
+            assert.equal(req.type, "image/png");
+            req.processContent((c) => {
+                content = c;
+                return c;
+            });
+        }
+    });
+
+    r.get();
+    let res = yield when(r, "complete");
+    mod.destroy();
+
+    //TODO there is some encoding problem with content.
+    //assert.equal(res.text, content, "Image content is still the same");
+
+    assert.equal(res.text, unmodifiedResult.text, "Image content is the same with and without request mod");
 };
 
 //TODO test contracts
