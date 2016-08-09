@@ -112,8 +112,7 @@ exports['test outgoing'] = function*(assert) {
             assert.equal(req.referer, "", "Referer is matching");
             assert.throws(() => req.status, "Cannot get status of an outgoing request");
             assert.equal(req.content, "test", "Content read correctly");
-            assert.equal(req.charset, "UTF-8", "Charset is correct");
-            assert.equal(req.type, "application/x-www-form-urlencoded; charset=UTF-8", "Content type is correct");
+            assert.equal(req.type, "application/x-www-form-urlencoded", "Content type is correct");
             assert.throws(() => req.notCached, "notCached throws for outgoing requests");
 
             req.content = "tset";
