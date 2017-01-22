@@ -1,4 +1,6 @@
 # requestmod
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/freaktechnik/jetpack-requestmod.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/freaktechnik/jetpack-requestmod.svg?branch=master)](https://travis-ci.org/freaktechnik/jetpack-requestmod) [![Dependency Status](https://dependencyci.com/github/freaktechnik/jetpack-requestmod/badge)](https://dependencyci.com/github/freaktechnik/jetpack-requestmod)
 
 Modify ongoing requests using the Firefox Add-on SDK
